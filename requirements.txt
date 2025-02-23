@@ -2,3 +2,4 @@ supabase
 Flask
 aiohttp
 gunicorn
+requests
