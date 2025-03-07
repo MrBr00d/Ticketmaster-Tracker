@@ -13,7 +13,7 @@ handlers=[
 )
 # Flask app setup
 ini_file_path = os.path.join(os.path.dirname(__file__), "secrets.ini")
-app = Flask(__name__, static_folder='/tmt')
+app = Flask(__name__, static_folder='static', static_url_path='/tmt/static')
 config = configparser.ConfigParser()
 config.read(ini_file_path)
 api_key = config["CREDENTIALS"]["API_KEY"]
