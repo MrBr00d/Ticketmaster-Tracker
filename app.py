@@ -47,7 +47,7 @@ def signup():
         password = request.form['password']
         response = supabase_client.auth.sign_up({"email": email, "password": password})
         session["user"] = {"id": response.user.id,"email": response.user.email}
-        return redirect('/')
+        return redirect('/tmt')
     return render_template('signup.html')
 
 
@@ -59,7 +59,7 @@ def login():
         response = supabase_client.auth.sign_in_with_password({"email": email, "password": password})
         if response.session:
             session["user"] = {"id": response.user.id,"email": response.user.email, "id": response.user.id}
-            return redirect("/")
+            return redirect("/tmt")
         return response
     return render_template('login.html')
 
@@ -68,7 +68,7 @@ def logout():
     response = supabase_client.auth.sign_out()
     print(response)
     session.pop('user', None)
-    return redirect('/')
+    return redirect('/tmt')
 
 @app.route('/tmt/view')
 def table():
@@ -82,7 +82,7 @@ def table():
 
         return render_template('table.html', data=data)
     else:
-        return redirect('login')
+        return redirect('/tmt/login')
 
 @app.route('/tmt/delete', methods=['POST'])
 def delete_item():
