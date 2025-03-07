@@ -26,7 +26,7 @@ SUPABASE_URL = config["CREDENTIALS"]["URL"]  # Replace with your Supabase URL
 SUPABASE_KEY =  api_key # Replace with your Supabase API key
 supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 
-@flask_bp.route('/')
+@app.route('/tmt')
 def home():
     response = supabase_client.auth.get_user()
     if response:
