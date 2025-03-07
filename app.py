@@ -14,23 +14,21 @@ handlers=[
 # Flask app setup
 ini_file_path = os.path.join(os.path.dirname(__file__), "secrets.ini")
 app = Flask(__name__)
-#app.config['APPLICATION_ROOT'] = '/tmtracker'
 config = configparser.ConfigParser()
 config.read(ini_file_path)
 api_key = config["CREDENTIALS"]["API_KEY"]
 app.secret_key = config["CREDENTIALS"]["FLASK_KEY"]
-flask_bp = Blueprint('flask_bp', __name__, url_prefix='/tmt')
 
 # Supabase setup
 SUPABASE_URL = config["CREDENTIALS"]["URL"]  # Replace with your Supabase URL
 SUPABASE_KEY =  api_key # Replace with your Supabase API key
 supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 
-@app.route('/tmt')
+@app.route('/tmt/')
 def home():
     response = supabase_client.auth.get_user()
     if response:
-        return f"""Welcome {session['user']['email']}! <a href='{url_for('flask_bp.logout')}'><input type='button' value='Logout' /></a> <br>
+        return f"""Welcome {session['user']['email']}! <a href='tmt/logout'><input type='button' value='Logout' /></a> <br>
                 Your ntfy room key is: {session['user']['id']} <br>
                 For documentation please go to <a href='{url_for('flask_bp.docs')}'>the documentation page</a> for explanaition how the app works. <br>
                 Please select the action you want to do:<br>
@@ -42,7 +40,7 @@ def home():
                 """
         
 
-@flask_bp.route('/signup', methods=['GET', 'POST'])
+@app.route('/tmt/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         email = request.form['email']
@@ -53,7 +51,7 @@ def signup():
     return render_template('signup.html')
 
 
-@flask_bp.route('/login', methods=['GET', 'POST'])
+@app.route('/tmt/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -65,14 +63,14 @@ def login():
         return response
     return render_template('login.html')
 
-@flask_bp.route('/logout')
+@app.route('/tmt/logout')
 def logout():
     response = supabase_client.auth.sign_out()
     print(response)
     session.pop('user', None)
     return redirect('/')
 
-@flask_bp.route('/view')
+@app.route('/tmt/view')
 def table():
     response = supabase_client.auth.get_user()
     if response:
@@ -86,23 +84,23 @@ def table():
     else:
         return redirect('login')
 
-@flask_bp.route('/delete', methods=['POST'])
+@app.route('/tmt/delete', methods=['POST'])
 def delete_item():
     user_id = request.form.get('id')
     concert_id = request.form.get('concert')
     response = supabase_client.table('trackers').delete().eq('user_id', user_id).eq('concert_id', int(concert_id)).execute()
 
-    return redirect('/view')
+    return redirect('/tmt/view')
 
-@flask_bp.route('/add')
+@app.route('/tmt/add')
 def add():
     response = supabase_client.auth.get_user()
     if response:
         return render_template('add.html')
     else:
-        return redirect('/login')
+        return redirect('/tmt/login')
     
-@flask_bp.route('/addconcert', methods=["POST"])
+@app.route('/tmt/addconcert', methods=["POST"])
 def add_concert():
     response = supabase_client.auth.get_user()
     if response:
@@ -110,13 +108,13 @@ def add_concert():
         concert_id = request.form.get('concert_id')
         concert_name = request.form.get('concert_name')
         response = supabase_client.table('trackers').insert({"user_id": user_id, "concert_id": concert_id, "concert_name": concert_name}).execute()
-        return redirect('/view')
+        return redirect('/tmt/view')
     else:
-        return redirect('/login')
+        return redirect('/tmt/login')
 
-@flask_bp.route('/docs')
+@app.route('/tmt/docs')
 def docs():
     return render_template('docs.html')
-app.register_blueprint(flask_bp)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
