@@ -28,15 +28,15 @@ supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 def home():
     response = supabase_client.auth.get_user()
     if response:
-        return f"""Welcome {session['user']['email']}! <a href='tmt/logout'><input type='button' value='Logout' /></a> <br>
+        return f"""Welcome {session['user']['email']}! <a href='/tmt/logout'><input type='button' value='Logout' /></a> <br>
                 Your ntfy room key is: {session['user']['id']} <br>
-                For documentation please go to <a href='{url_for('flask_bp.docs')}'>the documentation page</a> for explanaition how the app works. <br>
+                For documentation please go to <a href='/tmt/docs'>the documentation page</a> for explanaition how the app works. <br>
                 Please select the action you want to do:<br>
-                <a href='{url_for('flask_bp.table')}'><input type='button' value='View concerts' /></a><a href='{url_for('flask_bp.add')}'><input type='button' value='Add concerts' /></a>"""
+                <a href='/tmt/view'><input type='button' value='View concerts' /></a><a href='/tmt/add'><input type='button' value='Add concerts' /></a>"""
     else:
-        return  f"""
+        return  """
                 Welcome to the admin page for the ticketmaster tracker! Please either login or sign up. <br>
-                <a href='{url_for('flask_bp.login')}'><input type='button' value='Login' /></a> | <a href='{url_for('flask_bp.signup')}'><input type='button' value='Sign Up' />
+                <a href='/tmt/login'><input type='button' value='Login' /></a> | <a href='/tmt/signup'><input type='button' value='Sign Up' />
                 """
         
 
