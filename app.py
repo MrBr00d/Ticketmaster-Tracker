@@ -2,10 +2,19 @@ from flask import Flask, request, session, redirect, render_template
 import supabase
 import configparser
 import os
-
+import logging
+logging.basicConfig(
+level=logging.DEBUG,  # Capture all levels of logs
+format='%(asctime)s - %(levelname)s - %(message)s',  # Log format with timestamp
+handlers=[
+    logging.FileHandler("logfile_flask.log"),  # Log to a file
+    logging.StreamHandler()              # Log to console
+    ]
+)
 # Flask app setup
 ini_file_path = os.path.join(os.path.dirname(__file__), "secrets.ini")
 app = Flask(__name__)
+#app.config['APPLICATION_ROOT'] = '/tmtracker'
 config = configparser.ConfigParser()
 config.read(ini_file_path)
 api_key = config["CREDENTIALS"]["API_KEY"]
@@ -109,4 +118,4 @@ def docs():
     return render_template('docs.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

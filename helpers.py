@@ -9,7 +9,7 @@ import asyncio
 import aiohttp
 
 ini_file_path = os.path.join(os.path.dirname(__file__), "secrets.ini")
-pickle_dir = os.path.join(os.path.dirname(__file__), "Data\data.pickle")
+pickle_dir = os.path.join(os.path.dirname(__file__), "data.pickle")
 print(pickle_dir)
 logger = logging.getLogger(__name__)
 config = configparser.ConfigParser()
