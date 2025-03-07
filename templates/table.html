@@ -40,7 +40,7 @@ table, th, td {
                 <td>{{ item.concert_name }}</td>
                 <td>{{ item.concert_id }}</td>
                 <td>
-                    <form action="/delete" method="post" style="display:inline;">
+                    <form action="{{ url_for('flask_bp.delete_item') }}" method="post" style="display:inline;">
                     <input type="hidden" name="id" value="{{ item.user_id }}">
                     <input type="hidden" name="concert" value="{{ item.concert_id }}">
                     <button type="submit">Delete</button>

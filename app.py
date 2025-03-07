@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, render_template
+from flask import Flask, request, session, redirect, render_template, url_for, Blueprint
 import supabase
 import configparser
 import os
@@ -19,29 +19,30 @@ config = configparser.ConfigParser()
 config.read(ini_file_path)
 api_key = config["CREDENTIALS"]["API_KEY"]
 app.secret_key = config["CREDENTIALS"]["FLASK_KEY"]
+flask_bp = Blueprint('flask_bp', __name__, url_prefix='/tmt')
 
 # Supabase setup
 SUPABASE_URL = config["CREDENTIALS"]["URL"]  # Replace with your Supabase URL
 SUPABASE_KEY =  api_key # Replace with your Supabase API key
 supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 
-@app.route('/')
+@flask_bp.route('/')
 def home():
     response = supabase_client.auth.get_user()
     if response:
-        return f"""Welcome {session['user']['email']}! <a href='/logout'><input type='button' value='Logout' /></a> <br>
+        return f"""Welcome {session['user']['email']}! <a href='{url_for('flask_bp.logout')}'><input type='button' value='Logout' /></a> <br>
                 Your ntfy room key is: {session['user']['id']} <br>
-                For documentation please go to <a href='/docs'>the documentation page</a> for explanaition how the app works. <br>
+                For documentation please go to <a href='{url_for('flask_bp.docs')}'>the documentation page</a> for explanaition how the app works. <br>
                 Please select the action you want to do:<br>
-                <a href='/view'><input type='button' value='View concerts' /></a><a href='/add'><input type='button' value='Add concerts' /></a>"""
+                <a href='{url_for('flask_bp.table')}'><input type='button' value='View concerts' /></a><a href='{url_for('flask_bp.add')}'><input type='button' value='Add concerts' /></a>"""
     else:
-        return  """
+        return  f"""
                 Welcome to the admin page for the ticketmaster tracker! Please either login or sign up. <br>
-                <a href='/login'><input type='button' value='Login' /></a> | <a href='/signup'><input type='button' value='Sign Up' />
+                <a href='{url_for('flask_bp.login')}'><input type='button' value='Login' /></a> | <a href='{url_for('flask_bp.signup')}'><input type='button' value='Sign Up' />
                 """
         
 
-@app.route('/signup', methods=['GET', 'POST'])
+@flask_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         email = request.form['email']
@@ -52,7 +53,7 @@ def signup():
     return render_template('signup.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@flask_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -64,14 +65,14 @@ def login():
         return response
     return render_template('login.html')
 
-@app.route('/logout')
+@flask_bp.route('/logout')
 def logout():
     response = supabase_client.auth.sign_out()
     print(response)
     session.pop('user', None)
     return redirect('/')
 
-@app.route('/view')
+@flask_bp.route('/view')
 def table():
     response = supabase_client.auth.get_user()
     if response:
@@ -85,7 +86,7 @@ def table():
     else:
         return redirect('login')
 
-@app.route('/delete', methods=['POST'])
+@flask_bp.route('/delete', methods=['POST'])
 def delete_item():
     user_id = request.form.get('id')
     concert_id = request.form.get('concert')
@@ -93,7 +94,7 @@ def delete_item():
 
     return redirect('/view')
 
-@app.route('/add')
+@flask_bp.route('/add')
 def add():
     response = supabase_client.auth.get_user()
     if response:
@@ -101,7 +102,7 @@ def add():
     else:
         return redirect('/login')
     
-@app.route('/addconcert', methods=["POST"])
+@flask_bp.route('/addconcert', methods=["POST"])
 def add_concert():
     response = supabase_client.auth.get_user()
     if response:
@@ -113,9 +114,9 @@ def add_concert():
     else:
         return redirect('/login')
 
-@app.route('/docs')
+@flask_bp.route('/docs')
 def docs():
     return render_template('docs.html')
-
+app.register_blueprint(flask_bp)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
