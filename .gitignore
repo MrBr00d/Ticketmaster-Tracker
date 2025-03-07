@@ -172,3 +172,4 @@ cython_debug/
 *.log
 secrets.ini
 data.pickle
+template.secrets.ini
