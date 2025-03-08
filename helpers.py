@@ -86,7 +86,7 @@ def check_new(ticket_ids: list) -> tuple[bool,list]:
 
 async def push_notification(session, user_id, concert_name, prices):
     url = f"https://ntfy.sh/{user_id}"
-    message = f"caa05286-99fb-4738-bcb8-053c04ca0c85 There are new tickets available for concert: {concert_name}. The price(s) are: {prices}"
+    message = f"There are new tickets available for concert: {concert_name}. The price(s) are: {prices}"
     async with session.post(url, data=message.encode(encoding='utf-8'), headers={"Priority": "high"}) as response:
         logger.info(f"Pushed concert info to user: {user_id}")
         return await response.text()
