@@ -4,7 +4,7 @@ import configparser
 import os
 import logging
 logging.basicConfig(
-level=logging.DEBUG,  # Capture all levels of logs
+level=logging.INFO,  # Capture all levels of logs
 format='%(asctime)s - %(levelname)s - %(message)s',  # Log format with timestamp
 handlers=[
     logging.FileHandler("logfile_flask.log"),  # Log to a file
@@ -28,8 +28,8 @@ supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 def home():
     response = supabase_client.auth.get_user()
     if response:
-        return f"""Welcome {session['user']['email']}! <a href='/tmt/logout'><input type='button' value='Logout' /></a> <br>
-                Your ntfy room key is: {session['user']['id']} <br>
+        return f"""Welcome {response.user.email}! <a href='/tmt/logout'><input type='button' value='Logout' /></a> <br>
+                Your ntfy room key is: {response.user.id} <br>
                 For documentation please go to <a href='/tmt/docs'>the documentation page</a> for explanaition how the app works. <br>
                 Please select the action you want to do:<br>
                 <a href='/tmt/view'><input type='button' value='View concerts' /></a><a href='/tmt/add'><input type='button' value='Add concerts' /></a>"""
@@ -46,7 +46,7 @@ def signup():
         email = request.form['email']
         password = request.form['password']
         response = supabase_client.auth.sign_up({"email": email, "password": password})
-        session["user"] = {"id": response.user.id,"email": response.user.email}
+        #["user"] = {"id": response.user.id,"email": response.user.email}
         return redirect('/tmt')
     return render_template('signup.html')
 
@@ -58,7 +58,7 @@ def login():
         password = request.form['password']
         response = supabase_client.auth.sign_in_with_password({"email": email, "password": password})
         if response.session:
-            session["user"] = {"id": response.user.id,"email": response.user.email, "id": response.user.id}
+            #session["user"] = {"id": response.user.id,"email": response.user.email, "id": response.user.id}
             return redirect("/tmt")
         return response
     return render_template('login.html')
@@ -67,7 +67,7 @@ def login():
 def logout():
     response = supabase_client.auth.sign_out()
     print(response)
-    session.pop('user', None)
+#    session.pop('user', None)
     return redirect('/tmt')
 
 @app.route('/tmt/view')
@@ -117,4 +117,4 @@ def docs():
     return render_template('docs.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)
