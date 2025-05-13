@@ -28,16 +28,39 @@ supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
 def home():
     response = supabase_client.auth.get_user()
     if response:
-        return f"""Welcome {response.user.email}! <a href='/tmt/logout'><input type='button' value='Logout' /></a> <br>
-                Your ntfy room key is: {response.user.id} <br>
-                For documentation please go to <a href='/tmt/docs'>the documentation page</a> for explanaition how the app works. <br>
-                Please select the action you want to do:<br>
-                <a href='/tmt/view'><input type='button' value='View concerts' /></a><a href='/tmt/add'><input type='button' value='Add concerts' /></a>"""
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Ticketmaster tracker - Welcome</title>
+            <meta name="description" content="Welcome to the admin page for the ticketmaster tracker.">
+            <meta name="keywords" content="ticketmaster, tracker, concerts">
+        </head>
+        <body>
+            Welcome {response.user.email}! <a href='/tmt/logout'><input type='button' value='Logout' /></a> <br>
+            Your ntfy room key is: {response.user.id} <br>
+            For documentation please go to <a href='/tmt/docs'>the documentation page</a> for explanation how the app works. <br>
+            Please select the action you want to do:<br>
+            <a href='/tmt/view'><input type='button' value='View concerts' /></a><a href='/tmt/add'><input type='button' value='Add concerts' /></a>
+        </body>
+        </html>
+        """
     else:
-        return  """
-                Welcome to the admin page for the ticketmaster tracker! Please either login or sign up. <br>
-                <a href='/tmt/login'><input type='button' value='Login' /></a> | <a href='/tmt/signup'><input type='button' value='Sign Up' />
-                """
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Ticketmaster tracker - Welcome</title>
+            <meta name="description" content="Welcome to the admin page for the ticketmaster tracker.">
+            <meta name="keywords" content="ticketmaster, tracker, concerts">
+        </head>
+        <body>
+            Welcome to the admin page for the ticketmaster tracker! Please either login or sign up. <br>
+            <a href='/tmt/login'><input type='button' value='Login' /></a> | <a href='/tmt/signup'><input type='button' value='Sign Up' />
+        </body>
+        </html>
+        """
+
         
 
 @app.route('/tmt/signup', methods=['GET', 'POST'])
